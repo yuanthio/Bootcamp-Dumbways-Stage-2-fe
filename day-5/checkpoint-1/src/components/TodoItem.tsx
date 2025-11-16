@@ -1,0 +1,53 @@
+import { useState } from "react";
+import { useTodo } from "../hooks/useTodo";
+import type { Todo } from "../types/todo";
+
+export const TodoItem = ({ todo }: { todo: Todo }) => {
+  const { updateTodo, deleteTodo, toggleComplete, loading } = useTodo();
+  const [isEditing, setIsEditing] = useState(false);
+  const [text, setText] = useState(todo.text);
+
+  const handleUpdate = () => {
+    updateTodo(todo.id, text);
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="flex gap-4 justify-center items-center">
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={() => toggleComplete(todo.id)}
+      />
+
+      {isEditing ? (
+        <>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="border"
+            disabled={loading}
+          />
+          <button onClick={handleUpdate} disabled={loading}>
+            Save
+          </button>
+        </>
+      ) : (
+        <>
+          <span
+            style={{ textDecoration: todo.completed ? "line-through" : "none" }}
+          >
+            {todo.text}
+          </span>
+          <button onClick={() => setIsEditing(true)} disabled={loading}>
+            Edit
+          </button>
+        </>
+      )}
+
+      <button onClick={() => deleteTodo(todo.id)} disabled={loading}>
+        Delete
+      </button>
+    </div>
+  );
+};
